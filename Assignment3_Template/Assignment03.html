@@ -21,11 +21,13 @@
             </div>
         </div>
         <script>
+            
+            var canvasWidth = 900;
+            var canvasHeight = 600;
             var targets = [];
             var curTarget = 0;
             var cursorSize = 5;
             var startArea = {x:10, y:10, width:250, height:150};
-            var targetArea = {x:300, y:40, width:800, height:540};
             var running = false;
             var mode = "bubble";
             var trial = -1;
@@ -34,11 +36,28 @@
             var startPosition;
             var studyLog;
             var exprInd = 0;
+            var errors  = 0;
+            var listItems = 15;
+            var listItemHeight = 10;
+            var listItemGap = 4;
+            var listItemMaxWidth = 40;
+            var listItemMinWidth = 5;
+            
+            var toolBarItems = 9;
+            var toolbarHeight = 35;
+            var gridItemsX = 3;
+            var gridItemsY = 3;
+            
 
             function reset() {
                 running = false;
                 hit = [];
                 targets = [];
+                
+                for(var i = 0; i < listItems; i++){
+                    t = {x:startArea.width+20, y:toolbarHeight + i*(listItemHeight+listItemGap), w: 30, height:10};
+                }
+                /*
                 while(targets.length < 20) {
                     t = {x:targetArea.x + random(targetArea.width), y:targetArea.y + random(targetArea.height), r:random(10, 40)}
                     var add = true;
@@ -52,22 +71,26 @@
                         targets.push(t);
                     }
                 }
+                */
+                targets.push(t);
                 curTarget = int(random(targets.length));
                 cursorSize = 1;
+                errors = 0;
                 trial++;
             }
 
             function setup() {
-                var canvas = createCanvas(900, 600);
+                var canvas = createCanvas(canvasWidth, canvasHeight);
                 canvas.parent('sketch-holder');
                 studyLog = new p5.Table();
                 studyLog.addColumn('Participant');
                 studyLog.addColumn('Trial');
                 studyLog.addColumn('Condition');
                 studyLog.addColumn('Time');
-                studyLog.addColumn('TargetSize');
+                //studyLog.addColumn('TargetSize');
                 studyLog.addColumn('TargetDistance');
                 studyLog.addColumn('Duration');
+                studyLog.addColumn('Mis-Clicks');
                 reset();
             }
 
@@ -75,7 +98,7 @@
                 if(running) {
                     hit = []
                     for(var i = 0; i < targets.length; ++i) {
-                        if(collideCircleCircle(mouseX, mouseY, cursorSize * 2, targets[i].x, targets[i].y, targets[i].r * 2)) {
+                        if(collideCircleCircle(mouseX, mouseY, cursorSize * 2, targets[i].x, targets[i].y, 20)) {
                             hit.push(i);
                         }
                     }
@@ -87,11 +110,15 @@
                         row.setNum('Trial', trial);
                         row.setString('Condition', mode);
                         row.setString('Time', curTime.toJSON());
-                        row.setNum('TargetSize', targets[curTarget].r * 2);
+                        //row.setNum('TargetSize', targets[curTarget].r * 2);
                         row.setNum('TargetDistance', dist(startPosition.x, startPosition.y, targets[curTarget].x, targets[curTarget].y));
                         row.setNum('Duration', curTime - startTime);
-
+                        row.setNum('Mis-Clicks', errors);
+                        
                         reset();
+                    }
+                    else{                        
+                        errors++;
                     }
                 } else{
                     if(collidePointRect(mouseX, mouseY, startArea.x, startArea.y, startArea.width, startArea.height)) {
@@ -124,7 +151,7 @@
                     if(mode != "normal") {
                         cursorSize = -1;
                         for(var i = 0; i < targets.length; ++i) {
-                            var distance = dist(mouseX, mouseY, targets[i].x, targets[i].y) - targets[i].r;
+                            var distance = dist(mouseX, mouseY, targets[i].x, targets[i].y);
                             if(cursorSize == -1 || distance < cursorSize) {
                                 cursorSize = distance;
                             }
@@ -139,10 +166,10 @@
                         ellipse(mouseX, mouseY, cursorSize * 2);
 
                         for(var i = 0; i < targets.length; ++i) {
-                            if(collideCircleCircle(mouseX, mouseY, cursorSize * 2, targets[i].x, targets[i].y, targets[i].r * 2)) {
+                            if(collideCircleCircle(mouseX, mouseY, cursorSize * 2, targets[i].x, targets[i].y, 10)) {
                                 fill('#20bf6b');
                                 noStroke();
-                                ellipse(targets[i].x, targets[i].y, targets[i].r * 2 + 20);
+                                rect(targets[i].x, targets[i].y, targets[i].w+20, targets.h+20);
                             }
                         }
                     }
@@ -162,7 +189,7 @@
                             noStroke();
                         }
 
-                        ellipse(targets[i].x, targets[i].y, targets[i].r * 2);
+                        rect(targets[i].x, targets[i].y, 600, 600);
                     }
                     var crossSize = 6;
                     stroke(255);
