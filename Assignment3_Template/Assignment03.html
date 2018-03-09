@@ -119,7 +119,7 @@
                 if(running) {
                     hit = []
                     for(var i = 0; i < targets.length; ++i) {
-                        if(collideCircleCircle(mouseX, mouseY, cursorSize * 2, targets[i].x, targets[i].y, 20)) {
+                        if(collideRectCircle(targets[i].x, targets[i].y, targets[i].w, targets[i].h, mouseX, mouseY, cursorSize * 2)) {
                             hit.push(i);
                         }
                     }
