@@ -22,8 +22,12 @@
         </div>
         <script>
             
-            var canvasWidth = 900;
+            var canvasWidth = 1100;
             var canvasHeight = 600;
+
+            var heightUnit = canvasHeight/100;
+            var widthUnit = canvasWidth/100;
+
             var targets = [];
             var curTarget = 0;
             var cursorSize = 5;
@@ -37,14 +41,16 @@
             var studyLog;
             var exprInd = 0;
             var errors  = 0;
+
             var listItems = 15;
-            var listItemHeight = 10;
-            var listItemGap = 4;
-            var listItemMaxWidth = 40;
+            var listItemHeight = 3*heightUnit;
+            var listItemGap = heightUnit;
+            var listItemMaxWidth = 5*widthUnit;
             var listItemMinWidth = 5;
             
             var toolBarItems = 9;
-            var toolbarHeight = 35;
+            var toolbarHeight = 8*heightUnit;
+
             var gridItemsX = 3;
             var gridItemsY = 3;
             
@@ -55,7 +61,22 @@
                 targets = [];
                 
                 for(var i = 0; i < listItems; i++){
-                    t = {x:startArea.width+20, y:toolbarHeight + i*(listItemHeight+listItemGap), w: 30, height:10};
+                    t = {x:2*widthUnit, y:toolbarHeight + i*(listItemHeight+listItemGap), w: 15*widthUnit, h:3*heightUnit};
+                    targets.push(t);
+                }
+
+                var tempToolbarW = [];
+                var lengthTempToolBar = 0;
+                for(var i = 0; i<toolBarItems; i++){
+                    tempToolbarW.push(random(80)+50);
+                    lengthTempToolBar += tempToolbarW[i];
+                }
+                var tempX =0;
+                for(var i = 0; i< toolBarItems; i++){
+                    var tempToolbarButtonWidth = Math.round(tempToolbarW[i]*(canvasWidth/lengthTempToolBar));
+                    t = {x: tempX + widthUnit, y: 2 * heightUnit, w: tempToolbarButtonWidth - 2*widthUnit, h: 3* heightUnit};
+                    targets.push(t);
+                    tempX += tempToolbarButtonWidth;
                 }
                 /*
                 while(targets.length < 20) {
@@ -72,7 +93,7 @@
                     }
                 }
                 */
-                targets.push(t);
+
                 curTarget = int(random(targets.length));
                 cursorSize = 1;
                 errors = 0;
@@ -150,12 +171,19 @@
                 } else {
                     if(mode != "normal") {
                         cursorSize = -1;
+
                         for(var i = 0; i < targets.length; ++i) {
-                            var distance = dist(mouseX, mouseY, targets[i].x, targets[i].y);
-                            if(cursorSize == -1 || distance < cursorSize) {
-                                cursorSize = distance;
+                            for( var j = 0; j < 2; j++) {
+                                for (var k = 0; k < 2; k++) {
+                                    var distance = dist(mouseX, mouseY, targets[i].x+(j*targets[i].w), targets[i].y + (k*targets[i].h));
+                                    if(cursorSize == -1 || distance < cursorSize) {
+                                        cursorSize = distance;
+                                    }
+                                }
                             }
                         }
+
+
                         if(mode == "bubble"){
                           fill('#20bf6b');   
                         }
@@ -165,11 +193,12 @@
                         noStroke();
                         ellipse(mouseX, mouseY, cursorSize * 2);
 
+                        //draws halo
                         for(var i = 0; i < targets.length; ++i) {
-                            if(collideCircleCircle(mouseX, mouseY, cursorSize * 2, targets[i].x, targets[i].y, 10)) {
+                            if(collideRectCircle(targets[i].x, targets[i].y, targets[i].w, targets[i].h, mouseX, mouseY, cursorSize * 2)) {
                                 fill('#20bf6b');
                                 noStroke();
-                                rect(targets[i].x, targets[i].y, targets[i].w+20, targets.h+20);
+                                rect(targets[i].x-2, targets[i].y-2, targets[i].w+4, targets[i].h+4);
                             }
                         }
                     }
@@ -189,7 +218,7 @@
                             noStroke();
                         }
 
-                        rect(targets[i].x, targets[i].y, 600, 600);
+                        rect(targets[i].x, targets[i].y, targets[i].w, targets[i].h);
                     }
                     var crossSize = 6;
                     stroke(255);
