@@ -173,14 +173,10 @@
                         cursorSize = -1;
 
                         for(var i = 0; i < targets.length; ++i) {
-                            for( var j = 0; j < 2; j++) {
-                                for (var k = 0; k < 2; k++) {
-                                    var distance = dist(mouseX, mouseY, targets[i].x+(j*targets[i].w), targets[i].y + (k*targets[i].h));
-                                    if(cursorSize == -1 || distance < cursorSize) {
-                                        cursorSize = distance;
-                                    }
+							var distance = distRectPoint(targets[i].x, targets[i].y, targets[i].w, targets[i].h, mouseX, mouseY);
+                            if(cursorSize == -1 || distance < cursorSize) {
+                                    cursorSize = distance;
                                 }
-                            }
                         }
 
 
@@ -227,6 +223,30 @@
                 
                 }
             }
+			
+			function distRectPoint(x, y, w, h, mx, my) {
+				if(mx > x && mx < x+w && my > y && my < y+h){
+					return 0;
+					}
+				else if(mx > x && mx < x+w) {
+					return Math.min(Math.abs(my-y),Math.abs(my-(y+h)));
+					}
+				else if(my > y && my < y+h) {
+					return Math.min(Math.abs(mx-x),Math.abs(mx-(x+w)));
+					}
+				else {
+					var tempDist = 9999;
+					for(var i = 0; i < 2; i++) {
+						for(var j = 0; j < 2; j++){
+							if(dist(mx, my, x+(i*w), y+(j*h)) < tempDist){ 
+								tempDist = dist(mx, my, x+(i*w), y+(j*h));
+							}
+							
+						}
+					}
+					return tempDist;
+				}
+			}
             
             function saveLog(){
                 exprInd++;
