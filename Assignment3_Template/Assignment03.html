@@ -45,14 +45,19 @@
             var listItems = 15;
             var listItemHeight = 3*heightUnit;
             var listItemGap = heightUnit;
-            var listItemMaxWidth = 5*widthUnit;
-            var listItemMinWidth = 5;
+            var listItemWidth = 15* widthUnit;
+            var listItemSectorWidth = 20*widthUnit;
+            var listItemHeight = 3*heightUnit;
             
             var toolBarItems = 9;
             var toolbarHeight = 8*heightUnit;
 
-            var gridItemsX = 3;
+            var gridItemsX = 4;
             var gridItemsY = 3;
+            var gridItemsSectorWidth = canvasWidth-listItemSectorWidth;
+            var gridItemsSectorHeight = canvasHeight - toolbarHeight;
+            var gridItemWidth = gridItemsSectorWidth/gridItemsX - 8*widthUnit;
+            var gridItemHeight = gridItemsSectorHeight/gridItemsY - 8*heightUnit;
             
 
             function reset() {
@@ -61,7 +66,7 @@
                 targets = [];
                 
                 for(var i = 0; i < listItems; i++){
-                    t = {x:2*widthUnit, y:toolbarHeight + i*(listItemHeight+listItemGap), w: 15*widthUnit, h:3*heightUnit};
+                    t = {x:2*widthUnit, y:toolbarHeight + i*(listItemHeight+listItemGap), w: listItemWidth, h:listItemHeight};
                     targets.push(t);
                 }
 
@@ -78,6 +83,14 @@
                     targets.push(t);
                     tempX += tempToolbarButtonWidth;
                 }
+
+                for(var i = 0; i < gridItemsX; i++){
+                    for(var j = 0; j < gridItemsY; j++){
+                     t = {x: listItemSectorWidth+5 + i*(gridItemWidth+2*widthUnit), y: toolbarHeight+5 + j*(gridItemHeight+2*heightUnit), w: gridItemWidth, h: gridItemHeight}
+                     targets.push(t)
+                    }
+                }
+
                 /*
                 while(targets.length < 20) {
                     t = {x:targetArea.x + random(targetArea.width), y:targetArea.y + random(targetArea.height), r:random(10, 40)}
