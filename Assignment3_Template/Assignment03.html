@@ -42,22 +42,25 @@
             var exprInd = 0;
             var errors  = 0;
 
-            var listItems = 15;
-            var listItemHeight = 3*heightUnit;
-            var listItemGap = heightUnit;
-            var listItemWidth = 15* widthUnit;
-            var listItemSectorWidth = 20*widthUnit;
-            var listItemHeight = 3*heightUnit;
-            
+
             var toolBarItems = 9;
-            var toolbarHeight = 8*heightUnit;
+            var toolbarHeight = 20*heightUnit;
+
+            var listItems = 15;
+            var listItemWidth = 15* widthUnit;
+            var listItemSectorWidth = 40*widthUnit;
+            var listItemSectorHeight = canvasHeight-toolbarHeight;
+            var listItemHeight = 3*heightUnit;
+            var listItemVertSpace = (listItemSectorHeight/listItems)-listItemHeight;
 
             var gridItemsX = 4;
             var gridItemsY = 3;
             var gridItemsSectorWidth = canvasWidth-listItemSectorWidth;
             var gridItemsSectorHeight = canvasHeight - toolbarHeight;
-            var gridItemWidth = gridItemsSectorWidth/gridItemsX - 8*widthUnit;
-            var gridItemHeight = gridItemsSectorHeight/gridItemsY - 8*heightUnit;
+            var gridItemWidth = 12*widthUnit;
+            var gridItemHeight = 16*heightUnit;
+            var gridItemHorizSpace = (gridItemsSectorWidth/gridItemsX) - gridItemWidth;
+            var gridItemVertSpace = (gridItemsSectorHeight/gridItemsY) - gridItemHeight;
             
 
             function reset() {
@@ -66,7 +69,7 @@
                 targets = [];
                 
                 for(var i = 0; i < listItems; i++){
-                    t = {x:2*widthUnit, y:toolbarHeight + i*(listItemHeight+listItemGap), w: listItemWidth, h:listItemHeight};
+                    t = {x:2*widthUnit, y:toolbarHeight + i*(listItemHeight+listItemVertSpace), w: listItemWidth, h:listItemHeight};
                     targets.push(t);
                 }
 
@@ -86,7 +89,7 @@
 
                 for(var i = 0; i < gridItemsX; i++){
                     for(var j = 0; j < gridItemsY; j++){
-                     t = {x: listItemSectorWidth+5 + i*(gridItemWidth+2*widthUnit), y: toolbarHeight+5 + j*(gridItemHeight+2*heightUnit), w: gridItemWidth, h: gridItemHeight}
+                     t = {x: listItemSectorWidth+5 + i*(gridItemWidth+gridItemHorizSpace), y: toolbarHeight+5*heightUnit + j*(gridItemHeight+gridItemVertSpace), w: gridItemWidth, h: gridItemHeight}
                      targets.push(t)
                     }
                 }
@@ -207,7 +210,7 @@
                             if(collideRectCircle(targets[i].x, targets[i].y, targets[i].w, targets[i].h, mouseX, mouseY, cursorSize * 2)) {
                                 fill('#20bf6b');
                                 noStroke();
-                                rect(targets[i].x-2, targets[i].y-2, targets[i].w+4, targets[i].h+4);
+                                rect(targets[i].x-5, targets[i].y-5, targets[i].w+10, targets[i].h+10);
                             }
                         }
                     }
