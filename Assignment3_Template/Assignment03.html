@@ -17,11 +17,11 @@
             <div>Once you start you will see several circular targets. One will be highlighted. Select it to complete the task.</div>
             <div id="sketch-holder"></div>
             <div>
-                Participant: <input type="number" id="ParticipantField" value="0" /> Mode: Bubble cursor <input type="radio" checked name="studyMode" value="bubble" /> Halo Cursor <input type="radio" name="studyMode" value="halo" /> Normal Cursor <input type="radio" name="studyMode" value="normal" /> <button onclick="reset()">Reset</button> <button onclick="saveLog()">Save Log</button>
+                Participant: <input type="number" id="ParticipantField" value="0" /> Mode: Bubble cursor <input type="radio" checked name="studyMode" value="bubble" /> Fixed Bubble Cursor <input type="radio" name="studyMode" value="fixBubble" /> Halo Cursor <input type="radio" name="studyMode" value="halo" /> Fixed Halo Cursor <input type="radio" name="studyMode" value="fixHalo" /> Normal Cursor <input type="radio" name="studyMode" value="normal" /> <button onclick="reset()">Reset</button> <button onclick="saveLog()">Save Log</button>
             </div>
         </div>
         <script>
-            
+            //
             var canvasWidth = 1100;
             var canvasHeight = 600;
 
@@ -31,10 +31,10 @@
             var targets = [];
             var curTarget = 0;
             var cursorSize = 5;
-            var startArea = {x:10, y:10, width:250, height:150};
+            var startArea = {x:canvasWidth/2 - 300, y:canvasHeight/4 - 75, width:180, height:80};
             var running = false;
             var mode = "bubble";
-            var trial = -1;
+            var trial = 0;
             var hit = [];
             var startTime;
             var startPosition;
@@ -94,22 +94,6 @@
                     }
                 }
 
-                /*
-                while(targets.length < 20) {
-                    t = {x:targetArea.x + random(targetArea.width), y:targetArea.y + random(targetArea.height), r:random(10, 40)}
-                    var add = true;
-                    for(var i = 0; i < targets.length; ++i) {
-                        if(collideCircleCircle(t.x, t.y, t.r * 2.1, targets[i].x, targets[i].y, targets[i].r * 2.1)) {
-                            add = false;
-                            break;
-                        }
-                    }
-                    if(add) {
-                        targets.push(t);
-                    }
-                }
-                */
-
                 curTarget = int(random(targets.length));
                 cursorSize = 1;
                 errors = 0;
@@ -124,10 +108,10 @@
                 studyLog.addColumn('Trial');
                 studyLog.addColumn('Condition');
                 studyLog.addColumn('Time');
-                //studyLog.addColumn('TargetSize');
                 studyLog.addColumn('TargetDistance');
                 studyLog.addColumn('Duration');
                 studyLog.addColumn('Mis-Clicks');
+                studyLog.addColumn('Target Location');
                 reset();
             }
 
@@ -147,10 +131,20 @@
                         row.setNum('Trial', trial);
                         row.setString('Condition', mode);
                         row.setString('Time', curTime.toJSON());
-                        //row.setNum('TargetSize', targets[curTarget].r * 2);
                         row.setNum('TargetDistance', dist(startPosition.x, startPosition.y, targets[curTarget].x, targets[curTarget].y));
                         row.setNum('Duration', curTime - startTime);
                         row.setNum('Mis-Clicks', errors);
+
+                        if(curTarget<listItems){
+                            row.setString('Target Location', "List Item");
+                        }
+                        else if(curTarget<toolBarItems+listItems){
+                            row.setString('Target Location', "Toolbar Item");
+                        }
+                        else{
+                            row.setString('Target Location', "Grid Item");
+                        }
+
                         
                         reset();
                     }
@@ -183,7 +177,7 @@
                     fill(0);
                     textSize(18);
                     textAlign(CENTER);
-                    text('Click mouse here\nto start trial #' + (trial + 1), startArea.x + 0.5 * startArea.width, startArea.y + 0.5 * startArea.height - 0.5);
+                    text('Click mouse here\nto start trial #' + trial, startArea.x + 0.5 * startArea.width, startArea.y + 0.5 * startArea.height - 0.5);
                 } else {
                     if(mode != "normal") {
                         cursorSize = -1;
@@ -195,11 +189,14 @@
                                 }
                         }
 
+                        if(mode == "fixHalo" || mode == "fixBubble"){
+                            if(cursorSize > 30) cursorSize = 30;
+                        }
 
-                        if(mode == "bubble"){
+                        if(mode == "bubble" || mode == "fixBubble"){
                           fill('#20bf6b');   
                         }
-                        if(mode == "halo"){
+                        if(mode == "halo" || mode == "fixHalo"){
                             noFill();
                         }
                         noStroke();
