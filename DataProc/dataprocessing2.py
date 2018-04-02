@@ -31,24 +31,34 @@ def read_csv(fname):
            data.append(row2)
        return (data)
 
-col = ['Participant','Trial','Condition','Time','TargetDistance','Duration','Mis-Clicks','TargetLocation']
-data = read_csv("exper1a.csv")
+col = ['Participant','Trial','Condition','Time','TargetDistance','Duration','Mis-Clicks','TargetLocation','OrderLabel']
+data = read_csv("exper1b.csv")
 
 data = (pd.DataFrame(data, columns = col))
 #
 #data = data.melt(data, id_vars=['Condition'], var_name=['Condition'], value_vars=['Duration'])
 ##
 #
-sns.barplot(x='Condition', y='Duration', data=data, hue='TargetLocation')
+sns.barplot(x='Condition', y='Duration', data=data, hue = 'TargetLocation')
 plt.show()
+#
+#sns.barplot(x='TargetLocation', y='Duration', data=data)
+#plt.show()
+
 
 #sns.barplot(x='Condition', y='Mis-Clicks', data=data, hue='TargetLocation')
 
-
+print("T-test for Condition")
 normal = data[data['Condition'] == 'normal']['Duration']
-bubble = data[data['Condition'] == 'bubble']['Duration']
+bubble = data[data['Condition'] == 'fixBubble']['Duration']
 print(stats.ttest_rel(normal, bubble))
+print()
+print("T-test for OrderLabel")
+one = data[data['OrderLabel'] == 1.0 ]['Duration']
+two = data[data['OrderLabel'] == 4.0 ]['Duration']
+print(stats.ttest_rel(one, two))
 
+print()
 
 model = ols('Duration ~ C(Condition)', data=data).fit()
 table = sm.stats.anova_lm(model, typ=2)
