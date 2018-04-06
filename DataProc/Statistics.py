@@ -224,7 +224,11 @@ print(table)
 
 # ## Post-hoc Testing / Multiple Comparisons
 
-# In the ANOVA above, we look at effects for the groups, but we don't really compare individual conditions. Are old people using a keyboard faster than young people with a mouse? For this we run post-hoc tests that compare these individual conditions. As we only compare two conditions here you could just use a t-test as before. This depends on your data. Let's run an example comparison: 
+# In the ANOVA above, we look at effects for the groups, but we don't really 
+# compare individual conditions. Are old people using a keyboard faster than 
+# young people with a mouse? For this we run post-hoc tests that compare these 
+# individual conditions. As we only compare two conditions here you could just 
+# use a t-test as before. This depends on your data. Let's run an example comparison: 
 
 # In[9]:
 
@@ -248,12 +252,20 @@ omyk = stats.ttest_ind(old_mouse, young_keyboard)
 print(okyk.pvalue, omym.pvalue, omyk.pvalue)
 
 
-# Hey, one was actually significant. But wait, there is something going wrong here. We already saw that we might find a significant result even when the conditions don't really differ. So if we have many different conditions and thus run a whole lot of pairwise comparisons, aren't we likely to find something at some point, just out of luck? Indeed, this is the case and we have to correct our p-value to account for this. For t-tests a common way to do this is Bonferroni correction.
+# Hey, one was actually significant. But wait, there is something going wrong 
+# here. We already saw that we might find a significant result even when the 
+# conditions don't really differ. So if we have many different conditions and 
+# thus run a whole lot of pairwise comparisons, aren't we likely to find something 
+# at some point, just out of luck? Indeed, this is the case and we have to correct 
+# our p-value to account for this. For t-tests a common way to do this is Bonferroni 
+# correction.
 
 # In[11]:
+print("blabla")
+
+newresult = (multipletests([okym.pvalue, okyk.pvalue, omym.pvalue, omyk.pvalue], 0.05, 'bonferroni'))
+print(newresult)
 
 
-multipletests([okym.pvalue, okyk.pvalue, omym.pvalue, omyk.pvalue], 0.05, 'bonferroni')
-
-
-# Oops, once we do this, our one found effect disappears. However, note that this does not invalidate the found main effect.
+# Oops, once we do this, our one found effect disappears. However, note that 
+# this does not invalidate the found main effect.

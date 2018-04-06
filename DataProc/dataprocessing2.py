@@ -13,6 +13,7 @@ import pandas as pd
 import scipy.stats as stats
 import statsmodels.api as sm
 from statsmodels.formula.api import ols
+from statsmodels.sandbox.stats.multicomp import multipletests
 
 subjects = 4
 
@@ -32,14 +33,16 @@ def read_csv(fname):
        return (data)
 
 col = ['Participant','Trial','Condition','Time','TargetDistance','Duration','Mis-Clicks','TargetLocation','OrderLabel']
-data = read_csv("exper1b.csv")
+data = read_csv("exper1c.csv")
 
 data = (pd.DataFrame(data, columns = col))
 #
 #data = data.melt(data, id_vars=['Condition'], var_name=['Condition'], value_vars=['Duration'])
 ##
 #
-sns.barplot(x='Condition', y='Duration', data=data, hue = 'TargetLocation')
+data2 = data.groupby(['Condition','Participant'])['Duration'].mean().reset_index()
+
+sns.barplot(x='Condition', y='Duration', data=data)
 plt.show()
 #
 #sns.barplot(x='TargetLocation', y='Duration', data=data)
@@ -48,10 +51,21 @@ plt.show()
 
 #sns.barplot(x='Condition', y='Mis-Clicks', data=data, hue='TargetLocation')
 
-print("T-test for Condition")
-normal = data[data['Condition'] == 'normal']['Duration']
-bubble = data[data['Condition'] == 'fixBubble']['Duration']
-print(stats.ttest_rel(normal, bubble))
+#print(data2)
+
+normal = data2[data2['Condition'] == 'normal']['Duration']
+bubble = data2[data2['Condition'] == 'bubble']['Duration']
+fixBubble = data2[data2['Condition'] == 'fixBubble']['Duration']
+halo = data2[data2['Condition'] == 'halo']['Duration']
+fixHalo = data2[data2['Condition'] == 'fixHalo']['Duration']
+
+ttestBubble = stats.ttest_rel(normal, bubble)
+ttestFixBubble = stats.ttest_rel(normal, fixBubble)
+ttestHalo = stats.ttest_rel(normal, halo)
+ttestFixHalo = stats.ttest_rel(normal, fixHalo)
+    
+print("T-test for Condition, Bubble")  
+print(ttestBubble)
 print()
 print("T-test for OrderLabel")
 one = data[data['OrderLabel'] == 1.0 ]['Duration']
@@ -60,12 +74,13 @@ print(stats.ttest_rel(one, two))
 
 print()
 
-model = ols('Duration ~ C(Condition)', data=data).fit()
+model = ols('Duration ~ C(Condition)', data=data2).fit()
 table = sm.stats.anova_lm(model, typ=2)
 print(table)
 
 
-
+newresult = (multipletests([ttestBubble.pvalue, ttestFixBubble.pvalue, ttestHalo.pvalue, ttestFixHalo.pvalue], 0.05, 'bonferroni'))
+print(newresult)
 
 # 
 ##We want 4, 5*60 arrays of durations
